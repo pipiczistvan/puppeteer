@@ -1,0 +1,4 @@
+language: java
+jdk: oraclejdk8
+script: mvn clean install -DskipTests
+after_success: mvn test jacoco:report coveralls:report
