@@ -6,6 +6,8 @@ import org.junit.rules.ExpectedException;
 import puppeteer.Puppeteer;
 import puppeteer.exception.PuppeteerException;
 
+import static java.util.Collections.singletonList;
+
 public abstract class ExceptionTestBase {
 
     @Rule
@@ -17,7 +19,7 @@ public abstract class ExceptionTestBase {
     public void init() {
         thrown.expect(PuppeteerException.class);
 
-        puppeteer = new Puppeteer("puppeteer", "puppeteer.*");
+        puppeteer = new Puppeteer(singletonList("^.*/target/.*$"), singletonList("puppeteer.*"));
 
         puppeteer.useDefaultAnnotations();
         puppeteer.processAnnotations();

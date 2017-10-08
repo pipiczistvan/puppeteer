@@ -15,30 +15,32 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.util.Collection;
 import java.util.Set;
 
 public class AnnotationProcessor {
 
-    private final String prefix;
+    private final Reflections reflections;
+    private final SetMap<AnnotationType, Class<? extends Annotation>> annotationMap;
+    private final ClassInstanceHandler classInstanceHandler;
 
-    private Reflections reflections;
-    private ClassInstanceHandler classInstanceHandler;
-
-    public AnnotationProcessor(final String prefix) {
-        this.prefix = prefix;
-    }
-
-    public void processAnnotations(final Puppeteer puppeteer, final SetMap<AnnotationType, Class<? extends Annotation>> annotationMap, final String... packageRegexps) throws InstantiationException, IllegalAccessException, InvocationTargetException {
+    public AnnotationProcessor(final Puppeteer puppeteer,
+                               final SetMap<AnnotationType, Class<? extends Annotation>> annotationMap,
+                               final Collection<String> libraries,
+                               final Collection<String> packages) {
+        this.annotationMap = annotationMap;
         this.reflections = new Reflections(new ConfigurationBuilder()
-                        .setScanners(
-                                new FieldAnnotationsScanner(),
-                                new TypeAnnotationsScanner(),
-                                new SubTypesScanner(),
-                                new MethodAnnotationsScanner())
-                        .setUrls(PackageUtils.getUrlsFromPackageRegExps(PackageUtils.findAllPackagesStartingWith(prefix), packageRegexps)));
-
+                .setScanners(
+                        new FieldAnnotationsScanner(),
+                        new TypeAnnotationsScanner(),
+                        new SubTypesScanner(),
+                        new MethodAnnotationsScanner())
+                .setUrls(PackageUtils.getUrlsOfPackages(PackageUtils.findAllMatchingPackages(libraries, packages))));
         this.classInstanceHandler = new ClassInstanceHandler(puppeteer, reflections, annotationMap);
 
+    }
+
+    public void processAnnotations() throws InstantiationException, IllegalAccessException, InvocationTargetException {
         processFieldAnnotations(annotationMap, AnnotationType.FIELD);
     }
 
@@ -57,8 +59,7 @@ public class AnnotationProcessor {
 
                 if (Modifier.isStatic(field.getModifiers())) {
                     field.set(declaringClass, classInstanceHandler.createClassInstanceOf(fieldType, field.getGenericType()));
-                }
-                else {
+                } else {
                     field.set(classInstanceHandler.createClassInstanceOf(declaringClass), classInstanceHandler.createClassInstanceOf(fieldType, field.getGenericType()));
                 }
             }

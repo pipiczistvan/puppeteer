@@ -8,6 +8,7 @@ import puppeteer.annotation.type.AnnotationType;
 import puppeteer.exception.PuppeteerException;
 
 import java.lang.annotation.Annotation;
+import java.util.Collection;
 
 @SuppressWarnings("unchecked")
 @Component
@@ -15,17 +16,15 @@ public class Puppeteer {
 
     private final SetMap<AnnotationType, Class<? extends Annotation>> annotationMap;
     private final AnnotationProcessor annotationProcessor;
-    private final String[] packages;
 
     /***
      * The entry point of the Puppeteer Framework.
-     * @param prefix The prefix of the packages. The framework will only look for packages, that start with this.
-     * @param packages The framework will search for annotated things in these packages. It accepts regexps too.
+     * @param libraries The library files where the framework will do the searching.
+     * @param packages The framework will search for annotated classes and fields in these packages. It accepts regexps too.
      */
-    public Puppeteer(final String prefix, final String... packages) {
-        this.packages = packages;
+    public Puppeteer(final Collection<String> libraries, final Collection<String> packages) {
         this.annotationMap = new SetMap<>();
-        this.annotationProcessor = new AnnotationProcessor(prefix);
+        this.annotationProcessor = new AnnotationProcessor(this, annotationMap, libraries, packages);
     }
 
     /***
@@ -34,7 +33,7 @@ public class Puppeteer {
      */
     public void processAnnotations() throws PuppeteerException {
         try {
-            annotationProcessor.processAnnotations(this, annotationMap, packages);
+            annotationProcessor.processAnnotations();
         } catch (Exception e) {
             throw new PuppeteerException(e.getMessage());
         }
