@@ -9,12 +9,15 @@ I created it for educational purposes, and the idea is based on the [Spring Fram
 
 ## Setup
 
-Create a new instance of *Puppeteer*. The first argument is the package prefix, the second is an array of package regexps. *Puppeteer* will only load classes under these packages.
+Create a new instance of *Puppeteer*. The first argument is a collection of library regexps, the second is a collection of package regexps. *Puppeteer* will only load classes under these packages.
 
 If you have a *com.test.package.Test* class, you can use:
 
 ```
-Puppeteer puppeteer = new Puppeteer("com", "com.*.package");
+Puppeteer puppeteer = new Puppeteer(
+    Collections.singletonList("^.*/target/.*$"),
+    Collections.singletonList("com.*.package")
+);
 ```
 
 If you want to use the default annotations (*Component, Wire*), do this:
