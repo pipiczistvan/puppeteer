@@ -95,7 +95,7 @@ public class ClassInstanceHandler {
         return object;
     }
 
-    private Object createInstanceOf(final Class clazz) {
+    Object createInstanceOf(final Class clazz) {
         try {
             Constructor classConstructor = getAnnotatedConstructorOf(clazz);
             if (classConstructor != null) {

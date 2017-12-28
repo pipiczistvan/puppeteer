@@ -65,12 +65,21 @@ public class Puppeteer {
     }
 
     /***
-     * Returns a new instance of the class, and injects the required parameters.
+     * Returns an instance of the class, and injects the required parameters.
      * @param clazz The type
      * @return The class instance.
      */
     public <T> T getInstanceOf(Class<T> clazz) {
         return (T) annotationProcessor.getInstanceOf(clazz);
+    }
+
+    /***
+     * Returns a new (unique) instance of the class, and injects the required parameters.
+     * @param clazz The type
+     * @return The class instance.
+     */
+    public <T> T getNewInstanceOf(Class<T> clazz) {
+        return (T) annotationProcessor.getNewInstanceOf(clazz);
     }
 
 }

@@ -13,7 +13,6 @@ import puppeteer.util.PackageUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.Set;
@@ -40,15 +39,19 @@ public class AnnotationProcessor {
 
     }
 
-    public void processAnnotations() throws InstantiationException, IllegalAccessException, InvocationTargetException {
+    public void processAnnotations() throws IllegalAccessException {
         processFieldAnnotations(annotationMap, AnnotationType.FIELD);
     }
 
-    public Object getInstanceOf(Class clazz) {
+    public Object getInstanceOf(final Class clazz) {
         return classInstanceHandler.getInstanceOf(clazz);
     }
 
-    private void processFieldAnnotations(final SetMap<AnnotationType, Class<? extends Annotation>> annotationMap, final AnnotationType type) throws IllegalAccessException, InstantiationException, InvocationTargetException {
+    public Object getNewInstanceOf(final Class clazz) {
+        return classInstanceHandler.createInstanceOf(clazz);
+    }
+
+    private void processFieldAnnotations(final SetMap<AnnotationType, Class<? extends Annotation>> annotationMap, final AnnotationType type) throws IllegalAccessException {
         for (Class<? extends Annotation> annotation : annotationMap.get(type)) {
             Set<Field> fields = reflections.getFieldsAnnotatedWith(annotation);
             for (Field field : fields) {

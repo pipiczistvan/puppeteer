@@ -3,12 +3,8 @@ package puppeteer.puppeteer.success;
 import org.junit.Test;
 import puppeteer.annotation.premade.Wire;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 public class PuppeteerTest extends TestBase {
 
@@ -21,8 +17,6 @@ public class PuppeteerTest extends TestBase {
     @Wire
     private static SimpleInjectTester simpleInjectTester1;
 
-    private SimpleInjectTester simpleInjectTester2;
-
     @Test
     public void startTest() {
         assertThat(simpleInjectTester1, notNullValue());
@@ -30,8 +24,22 @@ public class PuppeteerTest extends TestBase {
 
     @Test
     public void getInstanceOfTest() {
-        simpleInjectTester2 = puppeteer.getInstanceOf(SimpleInjectTester.class);
-        assertThat(simpleInjectTester2, notNullValue());
+        SimpleInjectTester explicitInstance1 = puppeteer.getInstanceOf(SimpleInjectTester.class);
+        SimpleInjectTester explicitInstance2 = puppeteer.getInstanceOf(SimpleInjectTester.class);
+
+        assertThat(explicitInstance1, notNullValue());
+        assertThat(explicitInstance2, notNullValue());
+        assertEquals(explicitInstance1, explicitInstance2);
+    }
+
+    @Test
+    public void getNewInstanceOfTest() {
+        SimpleInjectTester explicitInstance1 = puppeteer.getNewInstanceOf(SimpleInjectTester.class);
+        SimpleInjectTester explicitInstance2 = puppeteer.getNewInstanceOf(SimpleInjectTester.class);
+
+        assertThat(explicitInstance1, notNullValue());
+        assertThat(explicitInstance2, notNullValue());
+        assertNotEquals(explicitInstance1, explicitInstance2);
     }
 
     @Test
@@ -52,7 +60,7 @@ public class PuppeteerTest extends TestBase {
         assertThat(fieldTester.filteredManagers, notNullValue());
         assertThat(fieldTester.filteredManagers.size(), is(1));
         assertThat(FieldTester.stringManager1, not(equalTo(FieldTester.stringManager2)));
-        assertThat(fieldTester.puppeteer, notNullValue());
-        assertEquals(fieldTester.puppeteer, puppeteer);
+        assertThat(FieldTester.puppeteer, notNullValue());
+        assertEquals(FieldTester.puppeteer, puppeteer);
     }
 }
