@@ -14,7 +14,9 @@ import puppeteer.util.PackageUtils;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.net.URL;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 public class AnnotationProcessor {
@@ -25,8 +27,9 @@ public class AnnotationProcessor {
 
     public AnnotationProcessor(final Puppeteer puppeteer,
                                final SetMap<AnnotationType, Class<? extends Annotation>> annotationMap,
-                               final Collection<String> libraries,
-                               final Collection<String> packages) {
+                               final Collection<URL> libraries,
+                               final Collection<String> libraryPatterns,
+                               final Collection<String> packagePatterns) {
         this.annotationMap = annotationMap;
         this.reflections = new Reflections(new ConfigurationBuilder()
                 .setScanners(
@@ -34,9 +37,8 @@ public class AnnotationProcessor {
                         new TypeAnnotationsScanner(),
                         new SubTypesScanner(),
                         new MethodAnnotationsScanner())
-                .setUrls(PackageUtils.getUrlsOfPackages(PackageUtils.findAllMatchingPackages(libraries, packages))));
+                .setUrls(mergeUrls(libraries, getUrlsByPatterns(libraryPatterns, packagePatterns))));
         this.classInstanceHandler = new ClassInstanceHandler(puppeteer, reflections, annotationMap);
-
     }
 
     public void processAnnotations() throws IllegalAccessException {
@@ -49,6 +51,18 @@ public class AnnotationProcessor {
 
     public Object getNewInstanceOf(final Class clazz) {
         return classInstanceHandler.createInstanceOf(clazz);
+    }
+
+    private static Collection<URL> mergeUrls(final Collection<URL> left, final Collection<URL> right) {
+        Set<URL> urls = new HashSet<>();
+        urls.addAll(left);
+        urls.addAll(right);
+
+        return urls;
+    }
+
+    private static Collection<URL> getUrlsByPatterns(final Collection<String> libraryPatterns, final Collection<String> packagePatterns) {
+        return PackageUtils.getUrlsOfPackages(PackageUtils.findAllMatchingPackages(libraryPatterns, packagePatterns));
     }
 
     private void processFieldAnnotations(final SetMap<AnnotationType, Class<? extends Annotation>> annotationMap, final AnnotationType type) throws IllegalAccessException {

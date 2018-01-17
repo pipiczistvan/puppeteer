@@ -8,7 +8,10 @@ import puppeteer.annotation.type.AnnotationType;
 import puppeteer.exception.PuppeteerException;
 
 import java.lang.annotation.Annotation;
+import java.net.URL;
 import java.util.Collection;
+
+import static java.util.Collections.emptyList;
 
 @SuppressWarnings("unchecked")
 @Component
@@ -17,14 +20,25 @@ public class Puppeteer {
     private final SetMap<AnnotationType, Class<? extends Annotation>> annotationMap;
     private final AnnotationProcessor annotationProcessor;
 
+
+    /***
+     * The entry point of the Puppeteer Framework.
+     * @param libraryPatterns The framework will search for libraries in classpath by pattern.
+     * @param packagePatterns The framework will search for annotated classes and fields in these packages. It accepts regexps too.
+     */
+    public Puppeteer(final Collection<String> libraryPatterns, final Collection<String> packagePatterns) {
+        this(emptyList(), libraryPatterns, packagePatterns);
+    }
+
     /***
      * The entry point of the Puppeteer Framework.
      * @param libraries The library files where the framework will do the searching.
-     * @param packages The framework will search for annotated classes and fields in these packages. It accepts regexps too.
+     * @param libraryPatterns The framework will search for libraries in classpath by pattern.
+     * @param packagePatterns The framework will search for annotated classes and fields in these packages. It accepts regexps too.
      */
-    public Puppeteer(final Collection<String> libraries, final Collection<String> packages) {
+    public Puppeteer(final Collection<URL> libraries, final Collection<String> libraryPatterns, final Collection<String> packagePatterns) {
         this.annotationMap = new SetMap<>();
-        this.annotationProcessor = new AnnotationProcessor(this, annotationMap, libraries, packages);
+        this.annotationProcessor = new AnnotationProcessor(this, annotationMap, libraries, libraryPatterns, packagePatterns);
     }
 
     /***
