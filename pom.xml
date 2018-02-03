@@ -15,7 +15,7 @@
         <reflections.version>0.9.9-RC2</reflections.version>
         <coveralls.version>4.2.0</coveralls.version>
         <jacoco.version>0.7.6.201602180812</jacoco.version>
-        <pi-utils.version>0.0.1</pi-utils.version>
+        <pi-utils.version>0.0.2</pi-utils.version>
     </properties>
 
     <repositories>
