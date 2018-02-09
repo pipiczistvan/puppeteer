@@ -62,10 +62,10 @@ public class ClassInstanceHandler {
             return objects;
         } else {
             if (objects.size() > 1) {
-                throw new PuppeteerException("Found too many annotated suitable classes " + objects + " for class: " + genericType.getTypeName());
+                throw new PuppeteerException("Found too many annotated suitable classes %s for class: %s", objects, genericType.getTypeName());
             }
             if (objects.size() < 1) {
-                throw new PuppeteerException("Could not find annotated suitable classes for class: " + genericType.getTypeName());
+                throw new PuppeteerException("Could not find annotated suitable classes for class: %s", genericType.getTypeName());
             }
             return objects.get(0);
         }
@@ -110,7 +110,7 @@ public class ClassInstanceHandler {
             }
             return clazz.newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new PuppeteerException("Could not create new instance of class: " + clazz.getName());
+            throw new PuppeteerException(e, "Could not create new instance of class: %s", clazz.getName());
         }
     }
 

@@ -49,7 +49,7 @@ public class Puppeteer {
         try {
             annotationProcessor.processAnnotations();
         } catch (Exception e) {
-            throw new PuppeteerException(e.getMessage());
+            throw new PuppeteerException(e, "Could not process annotations!");
         }
     }
 
